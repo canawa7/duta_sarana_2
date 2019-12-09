@@ -5,18 +5,6 @@ import 'react-table-v6/react-table.css';
 
 class App extends React.Component{
 
-  constructor(){
-    super();
-
-    this.state = {
-      bankBalance: ''
-    }
-  }
-
-  componentDidMount(){
-
-  }
-
   render(){
 
     const data = [
