@@ -10,6 +10,7 @@ const range = len => {
 
 const newPerson = () => {
   const statusChance = Math.random()
+  
   return {
     firstName: namor.generate({ words: 1, numbers: 0 }),
     lastName: namor.generate({ words: 1, numbers: 0 }),
