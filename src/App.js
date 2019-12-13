@@ -1,86 +1,103 @@
-import React from 'react'
-import styled from 'styled-components'
-import COMPANY_DATA from './components/data/data';
-import makeData from './makeData'
-
-import Table from './components/table/table';
+import React from "react";
+import MaterialTable from "material-table";
+import './App.css';
 
 function App() {
-  const columns = React.useMemo(
-    () => [
-        {
-          Header: 'No',
-          accessor: 'no',
-        },
-        {
-          Header: 'Tanggal',
-          accessor: 'tanggal',
-        },
-        {
-          Header: 'Keterangan',
-          accessor: 'keterangan',
-        },
-        {
-          Header: 'No Giro',
-          accessor: 'no_giro',
-        },
-        {
-          Header: 'Jumlah',
-          accessor: 'jumlah',
-        },
-      ],
-    []
-  )
-
-  const [data, setData] = React.useState(COMPANY_DATA);
-  // const [data, setData] = React.useState(() => makeData(20))
-  const [originalData] = React.useState(data)
-  const [skipPageReset, setSkipPageReset] = React.useState(false)
-
-  // We need to keep the table from resetting the pageIndex when we
-  // Update data. So we can keep track of that flag with a ref.
-
-  // When our cell renderer calls updateMyData, we'll use
-  // the rowIndex, columnId and new value to update the
-  // original data
-  const updateMyData = (rowIndex, columnId, value) => {
-    // We also turn on the flag to not reset the page
-    setSkipPageReset(true)
-    setData(old =>
-      old.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...old[rowIndex],
-            [columnId]: value,
-          }
-        }
-        return row
-      })
-    )
-  }
-
-  // After data chagnes, we turn the flag back off
-  // so that if data actually changes when we're not
-  // editing it, the page is reset
-  React.useEffect(() => {
-    setSkipPageReset(false)
-  }, [data])
-
-  // Let's add a data resetter/randomizer to help
-  // illustrate that flow...
-  const resetData = () => setData(originalData)
+  const [state, setState] = React.useState({
+    columns: [
+      { 
+        title: "No", 
+        field: "no" 
+      },
+      {
+        title: "Tanggal",
+        field: "tanggal",
+      },
+      { 
+        title: "Keterangan", 
+        field: "keterangan",  
+      },
+      {
+        title: "No Giro",
+        field: "no_giro",
+      },
+      {
+        title: "Jumlah",
+        field: "jumlah",
+      }
+    ],
+    data: [
+      {
+          no: 1,
+          tanggal: '28/9/19',
+          keterangan: 'PT. Cipta Mortar Utama',
+          no_giro: 'MY7. 410732',
+          jumlah: 70042500
+      },
+      {
+          no: 2,
+          tanggal: '28/9/19',
+          keterangan: 'PT Anugerah Beton Indonesia',
+          no_giro: 'MY7. 410726',
+          jumlah: 26840000
+      },
+      {
+          no: 3,
+          tanggal: '28/9/19',
+          keterangan: 'PT Anugerah Beton Indonesia',
+          no_giro: 'MY7. 410726',
+          jumlah: 26840000
+      },
+  ],
+  });
 
   return (
-    <div>
-      <button onClick={resetData}>Reset Data</button>
-      <Table
-        columns={columns}
-        data={data}
-        updateMyData={updateMyData}
-        skipPageReset={skipPageReset}
+    <div className='app'>
+      <MaterialTable
+        title="Editable Example"
+        columns={state.columns}
+        data={state.data}
+        editable={{
+          onRowAdd: newData =>
+            new Promise(resolve => {
+              setTimeout(() => {
+                resolve();
+                setState(prevState => {
+                  const data = [...prevState.data];
+                  data.push(newData);
+                  return { ...prevState, data };
+                });
+              }, 600);
+            }),
+          onRowUpdate: (newData, oldData) =>
+            new Promise(resolve => {
+              setTimeout(() => {
+                resolve();
+                if (oldData) {
+                  setState(prevState => {
+                    const data = [...prevState.data];
+                    data[data.indexOf(oldData)] = newData;
+                    return { ...prevState, data };
+                  });
+                }
+              }, 600);
+            }),
+          onRowDelete: oldData =>
+            new Promise(resolve => {
+              setTimeout(() => {
+                resolve();
+                setState(prevState => {
+                  const data = [...prevState.data];
+                  data.splice(data.indexOf(oldData), 1);
+                  return { ...prevState, data };
+                });
+              }, 600);
+            }),
+        }}
       />
     </div>
-  )
+    
+  );
 }
 
-export default App
+export default App;
